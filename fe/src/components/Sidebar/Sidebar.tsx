@@ -9,10 +9,9 @@ interface SidebarProps {
   onSelectSession: (id: string | null) => void
   onDeleteConversation: (id: string) => void
   onClose?: () => void
-  focusLatest?: boolean
 }
 
-export function Sidebar({ activeConversationId, onSelectSession, onDeleteConversation, onClose, focusLatest }: SidebarProps) {
+export function Sidebar({ activeConversationId, onSelectSession, onDeleteConversation, onClose }: SidebarProps) {
   const grouped = useAppSelector(selectGroupedConversations)
   const latestConversationId = useAppSelector(selectLatestConversationId)
   const hasConversations = grouped.length > 0
@@ -26,7 +25,7 @@ export function Sidebar({ activeConversationId, onSelectSession, onDeleteConvers
             type="button"
             onClick={onClose}
             aria-label="Close sidebar"
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="lg:hidden rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -77,7 +76,6 @@ export function Sidebar({ activeConversationId, onSelectSession, onDeleteConvers
                         type="button"
                         onClick={() => onSelectSession(conv.id)}
                         title={conv.title}
-                        autoFocus={focusLatest && isLatest}
                         className={`flex w-full items-start gap-2 rounded-lg px-3 py-2 pr-8 text-left text-sm transition-colors ${
                           isActive
                             ? 'bg-brand-navy/10 text-brand-navy'

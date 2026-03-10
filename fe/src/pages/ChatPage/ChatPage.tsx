@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useAuth } from '../../auth/useAuth.ts'
 import { useAppSelector } from '../../store/hooks.ts'
 import { useChat } from './useChat.ts'
-import { selectLatestConversationId } from '../../features/chat/chatSelectors.ts'
 import { ChatHeader } from '../../components/ChatHeader/index.ts'
 import { ChatWindow } from '../../components/ChatWindow/index.ts'
 import { Sidebar } from '../../components/Sidebar/index.ts'
@@ -10,7 +9,6 @@ import { Sidebar } from '../../components/Sidebar/index.ts'
 export function ChatPage() {
   const { logout } = useAuth()
   const { email } = useAppSelector((state) => state.auth)
-  const latestConversationId = useAppSelector(selectLatestConversationId)
   const {
     messages,
     activeConversationId,
@@ -44,7 +42,6 @@ export function ChatPage() {
           }}
           onClose={() => setSidebarOpen(false)}
           onDeleteConversation={deleteChat}
-          focusLatest={activeConversationId === null && latestConversationId !== null}
         />
       </div>
 

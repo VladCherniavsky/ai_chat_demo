@@ -1,0 +1,8 @@
+aws_region   = "us-east-1"
+project_name = "ai-chat-demo"
+environment  = "dev"
+
+# Cognito Hosted UI
+cognito_domain_prefix = "ai-chat-demo-dev"
+cognito_callback_urls = ["https://your-cloudfront-domain.cloudfront.net/callback", "http://localhost:5173/callback"]
+cognito_logout_urls   = ["https://your-cloudfront-domain.cloudfront.net/", "http://localhost:5173/"]

@@ -53,15 +53,15 @@ cp .env.example .env.local
 Edit `fe/.env.local`:
 
 ```env
-# Cognito — get these from Terraform outputs or your AWS console
-VITE_COGNITO_REGION=us-east-1
-VITE_COGNITO_USER_POOL_ID=us-east-1_XXXXXXXXX
-VITE_COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
-VITE_COGNITO_DOMAIN=ai-chat-demo-dev.auth.us-east-1.amazoncognito.com
-
-# OpenRouter — get your key at https://openrouter.ai/keys
+# OpenRouter — required; get your key at https://openrouter.ai/keys
 VITE_OPENROUTER_API_KEY=sk-or-...
 VITE_OPENROUTER_MODEL=anthropic/claude-3.5-sonnet
+
+# Cognito — only needed when deploying to AWS; not required for local dev
+# VITE_COGNITO_REGION=us-east-1
+# VITE_COGNITO_USER_POOL_ID=us-east-1_XXXXXXXXX
+# VITE_COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
+# VITE_COGNITO_DOMAIN=ai-chat-demo-dev.auth.us-east-1.amazoncognito.com
 ```
 
 ### 3. Start the dev server
@@ -109,18 +109,19 @@ cognito_domain              → VITE_COGNITO_DOMAIN
 
 ### Deploy frontend
 
+Use the deploy script — it builds, syncs to S3, and invalidates CloudFront in one step:
+
 ```bash
-# Build
-cd fe && npm run build
-
-# Sync to S3
-aws s3 sync dist/ s3://<frontend_bucket>/ --delete
-
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation \
-  --distribution-id <cloudfront_distribution_id> \
-  --paths "/*"
+./scripts/deploy-fe.sh
 ```
+
+To re-deploy without rebuilding (e.g. after an env-var change):
+
+```bash
+./scripts/deploy-fe.sh --skip-build
+```
+
+The script reads the S3 bucket name and CloudFront distribution ID directly from Terraform outputs, so no manual copy-paste is needed. AWS CLI credentials must be configured beforehand.
 
 ---
 
@@ -153,8 +154,10 @@ The dark navy base keeps the interface focused on content, while teal provides c
 │   │   ├── services/           openrouter.ts — SSE streaming client
 │   │   └── store/              Redux store + redux-persist config
 │   └── .env.example
-└── infra/                      Terraform
-    └── modules/
-        ├── cognito/            User Pool + Hosted UI App Client
-        └── frontend/           S3 (private) + CloudFront OAC
+├── infra/                      Terraform
+│   └── modules/
+│       ├── cognito/            User Pool + Hosted UI App Client
+│       └── frontend/           S3 (private) + CloudFront OAC
+└── scripts/
+    └── deploy-fe.sh            Build + S3 sync + CloudFront invalidation
 ```
